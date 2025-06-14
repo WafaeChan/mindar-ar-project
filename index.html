@@ -1,76 +1,101 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Start AR Experience</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="style.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0/dist/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/aframe/mindar-image-aframe.prod.js"></script>
-  </head>
-
-  <body>
-    <div id="start-screen">
-      <h1>🎯 Start AR Experience</h1>
-      <p>Tap below to enable camera and sound</p>
-      <button id="start-button">Start</button>
-    </div>
-
-    <a-scene
-      mindar-image="imageTargetSrc: targets.mind;"
-      embedded
-      color-space="sRGB"
-      vr-mode-ui="enabled: false"
-      device-orientation-permission-ui="enabled: true"
-      renderer="colorManagement: true, physicallyCorrectLights"
-      visible="false"
-    >
-      <a-assets>
-        <video
-          id="myvideo"
-          src="wahatvideo.mp4"
-          loop
-          preload="auto"
-          crossorigin="anonymous"
-          playsinline
-        ></video>
-      </a-assets>
-
-      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-      <a-entity mindar-image-target="targetIndex: 0">
-        <a-video
-          src="#myvideo"
-          width="1"
-          height="0.5625"
-          position="0 0 0"
-          rotation="0 0 0"
-        ></a-video>
-      </a-entity>
-    </a-scene>
-
-<script>
-  const button = document.getElementById("start-button");
-  const video = document.getElementById("myvideo");
-  const scene = document.querySelector("a-scene");
-  const startScreen = document.getElementById("start-screen");
-
-  button.addEventListener("click", async () => {
-    try {
-      await video.play(); // Ask for permission
-      video.muted = false;
-
-      // Start the MindAR engine
-      const mindarComponent = scene.components["mindar-image"];
-      await mindarComponent.start(); // ✅ this starts the AR engine
-      scene.setAttribute("visible", "true");
-      startScreen.style.display = "none";
-    } catch (e) {
-      alert("Please allow camera and sound access.");
-      console.error(e);
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MindAR Video AR Example</title>
+  
+  <!-- A-Frame and MindAR scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.3.0/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image.prod.js"></script>
+  
+  <style>
+    body, html { margin: 0; overflow: hidden; height: 100%; background: black; }
+    #start-button {
+      position: absolute;
+      z-index: 10;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 40px;
+      font-size: 20px;
+      cursor: pointer;
+      border: none;
+      background-color: #1e90ff;
+      color: white;
+      border-radius: 8px;
     }
-  });
-</script>
-
-  </body>
+  </style>
+</head>
+<body>
+  
+  <!-- Start button to get camera & sound permissions -->
+  <button id="start-button">Start AR Experience</button>
+  
+  <!-- Hidden video element to be used as texture -->
+  <video
+    id="myvideo"
+    src="wahatvideo.mp4"
+    playsinline
+    webkit-playsinline
+    crossorigin="anonymous"
+    loop
+    muted
+    style="display:none"
+  ></video>
+  
+  <!-- MindAR Scene -->
+  <a-scene
+    id="ar-scene"
+    mindar-image="imageTargetSrc: targets.mind;"
+    embedded
+    color-space="sRGB"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: true"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    style="display:none"
+  >
+    <!-- MindAR camera -->
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+    
+    <!-- Video displayed on target -->
+    <a-video
+      src="#myvideo"
+      mindar-image-target="targetIndex: 0"
+      position="0 0 0"
+      rotation="0 0 0"
+      width="1"
+      height="0.5625"
+      autoplay
+      loop
+    ></a-video>
+  </a-scene>
+  
+  <script>
+    const startButton = document.getElementById("start-button");
+    const video = document.getElementById("myvideo");
+    const scene = document.getElementById("ar-scene");
+    
+    startButton.addEventListener("click", async () => {
+      try {
+        // Play video and unmute
+        await video.play();
+        video.muted = false;
+        
+        // Show AR scene
+        scene.style.display = "block";
+        
+        // Start MindAR engine
+        const mindarComponent = scene.components["mindar-image"];
+        await mindarComponent.start();
+        
+        // Hide start button
+        startButton.style.display = "none";
+      } catch (error) {
+        alert("Please allow camera and sound access to start the AR experience.");
+        console.error(error);
+      }
+    });
+  </script>
+</body>
 </html>
