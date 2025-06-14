@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Start AR Experience</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/aframe@1.2.0/dist/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/aframe/mindar-image-aframe.prod.js"></script>
+  </head>
+
+  <body>
+    <div id="start-screen">
+      <h1>🎯 Start AR Experience</h1>
+      <p>Tap below to enable camera and sound</p>
+      <button id="start-button">Start</button>
+    </div>
+
+    <a-scene
+      mindar-image="imageTargetSrc: targets.mind;"
+      embedded
+      color-space="sRGB"
+      vr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: true"
+      renderer="colorManagement: true, physicallyCorrectLights"
+      visible="false"
+    >
+      <a-assets>
+        <video
+          id="myvideo"
+          src="wahatvideo.mp4"
+          loop
+          preload="auto"
+          crossorigin="anonymous"
+          playsinline
+        ></video>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-video
+          src="#myvideo"
+          width="1"
+          height="0.5625"
+          position="0 0 0"
+          rotation="0 0 0"
+        ></a-video>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const button = document.getElementById("start-button");
+      const video = document.getElementById("myvideo");
+      const scene = document.querySelector("a-scene");
+      const startScreen = document.getElementById("start-screen");
+
+      button.addEventListener("click", async () => {
+        try {
+          await video.play(); // triggers browser permission
+          video.muted = false;
+
+          // Start AR scene
+          scene.setAttribute("visible", "true");
+          startScreen.style.display = "none";
+        } catch (e) {
+          alert("Please allow camera and sound access.");
+          console.error(e);
+        }
+      });
+    </script>
+  </body>
+</html>
