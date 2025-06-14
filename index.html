@@ -49,25 +49,28 @@
       </a-entity>
     </a-scene>
 
-    <script>
-      const button = document.getElementById("start-button");
-      const video = document.getElementById("myvideo");
-      const scene = document.querySelector("a-scene");
-      const startScreen = document.getElementById("start-screen");
+<script>
+  const button = document.getElementById("start-button");
+  const video = document.getElementById("myvideo");
+  const scene = document.querySelector("a-scene");
+  const startScreen = document.getElementById("start-screen");
 
-      button.addEventListener("click", async () => {
-        try {
-          await video.play(); // triggers browser permission
-          video.muted = false;
+  button.addEventListener("click", async () => {
+    try {
+      await video.play(); // Ask for permission
+      video.muted = false;
 
-          // Start AR scene
-          scene.setAttribute("visible", "true");
-          startScreen.style.display = "none";
-        } catch (e) {
-          alert("Please allow camera and sound access.");
-          console.error(e);
-        }
-      });
-    </script>
+      // Start the MindAR engine
+      const mindarComponent = scene.components["mindar-image"];
+      await mindarComponent.start(); // ✅ this starts the AR engine
+      scene.setAttribute("visible", "true");
+      startScreen.style.display = "none";
+    } catch (e) {
+      alert("Please allow camera and sound access.");
+      console.error(e);
+    }
+  });
+</script>
+
   </body>
 </html>
